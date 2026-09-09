@@ -1,13 +1,13 @@
-# DA401 Capstone Project - [Your Name]
+# DA401 Capstone Project - Viet Nguyen
 
 ## Project Title
-(Write a clear, descriptive title for your project.)
+AI or Overhiring? Explaining the Post-Pandemic Decline in Early-Career Hiring
 
 ## Research Question
-What question are you trying to answer?
+Has the recent decline in early-career hiring in industries with high exposure to generative AI been driven primarily by AI-related labor restructuring, or can it be explained by unusually rapid pandemic-era hiring followed by a return toward normal employment levels?
 
 ## Data Source
-Where is your data coming from? 
+U.S. Census Bureau’s Quarterly Workforce Indicators (https://qwiexplorer.ces.census.gov/)
 
 ## Methods
 Which methods or models will you use? 
