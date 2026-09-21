@@ -9,6 +9,7 @@ __pycache__/
 *.pyd
 *.egg-info/
 .env
+.venv/
 
 # R
 .Rhistory
