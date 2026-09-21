@@ -4,8 +4,6 @@
 
 AI or Overhiring? Explaining the Post-Pandemic Decline in Early-Career Hiring
 
-This project is at the proposal stage. The planned research design and timeline may change as data availability and feedback guide the analysis. See the [initial proposal](docs/initial_proposal.pdf) for details.
-
 ## Research Question
 
 After accounting for unusually high pandemic-era employment growth, is greater exposure to generative AI related to lower hiring among workers ages 22 to 24?
@@ -14,7 +12,7 @@ The project will consider both AI-related labor restructuring and a post-pandemi
 
 ## Planned Data Sources
 
-- [U.S. Census Bureau's Quarterly Workforce Indicators (QWI)](https://qwiexplorer.ces.census.gov/): hiring, employment, and separations by state, industry, age group, and quarter. Four-digit NAICS industries will be used if coverage permits.
+- [U.S. Census Bureau&#39;s Quarterly Workforce Indicators (QWI)](https://qwiexplorer.ces.census.gov/): hiring, employment, and separations by state, industry, age group, and quarter. Four-digit NAICS industries will be used if coverage permits.
 - Occupational AI exposure measures from Eloundou et al. (2024), aggregated to industries using pre-pandemic occupation-industry employment shares.
 
 ## Planned Methods
