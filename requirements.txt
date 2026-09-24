@@ -1,0 +1,13 @@
+# Python 3.11+
+
+# Notebook environment
+jupyterlab==4.6.3
+ipykernel==7.3.0
+
+# Data pipeline
+pandas==3.0.6
+requests==2.34.2
+python-dotenv==1.2.3
+
+# Tests
+pytest==9.1.1
