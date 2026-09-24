@@ -1,0 +1,13 @@
+{
+  "include": [
+    "code",
+    "notebooks"
+  ],
+  "extraPaths": [
+    "code"
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "basic"
+}
