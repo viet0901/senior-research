@@ -24,3 +24,10 @@ data/
 
 # Other
 *.log
+
+# Local Codex/AI working context
+.cursor/
+.codex/
+.agents/
+AGENTS.md
+PROJECT_CONTEXT.md

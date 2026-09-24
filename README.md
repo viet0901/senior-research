@@ -30,7 +30,6 @@ The main model will include state-industry and quarter fixed effects, with stand
 
 ## Repository Structure
 
-- `docs/`: Initial proposal and supporting documents
 - `code/`: All analysis scripts or notebooks
 - `writing/`: Proposal, drafts, final paper
 - `figures/`: Plots, charts, visualizations
