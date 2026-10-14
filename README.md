@@ -30,7 +30,8 @@ The main model will include state-industry and quarter fixed effects, with stand
 
 ## Repository Structure
 
-- `code/`: All analysis scripts or notebooks
+- `notebooks/`: Main student-run research notebooks
+- `code/`: Small reusable functions that support the notebooks
 - `writing/`: Proposal, drafts, final paper
 - `figures/`: Plots, charts, visualizations
 - `data/`: Only small sample data (large files go in Google Drive)
