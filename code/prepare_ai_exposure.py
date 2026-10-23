@@ -19,6 +19,7 @@ import json
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
+from typing import TypedDict
 from zipfile import ZipFile
 
 import numpy as np
@@ -44,6 +45,14 @@ EMPLOYED = {"1", "2"}
 PRIVATE_EMPLOYEE = {"1", "2"}
 
 
+class OccupationDefinition(TypedDict):
+    """One ACS occupation and its official detailed SOC members."""
+
+    title: str
+    soc_header: str
+    members: list[str]
+
+
 def require_files(paths: list[Path]) -> None:
     """Stop with a useful message if a required input is missing."""
     missing = [str(path.relative_to(ROOT)) for path in paths if not path.is_file()]
@@ -53,10 +62,10 @@ def require_files(paths: list[Path]) -> None:
 
 def normal_code(value: object, width: int) -> str:
     """Return a zero-padded Census code while preserving missing values."""
-    if value is None or pd.isna(value):
+    if value is None:
         return "<missing>"
     code = str(value).strip()
-    if not code or code.lower() in {"nan", "none", "bbbb"}:
+    if not code or code.lower() in {"nan", "none", "<na>", "bbbb"}:
         return "<missing>"
     return code.zfill(width)
 
@@ -71,13 +80,13 @@ def read_qwi_industries() -> tuple[set[str], dict[str, str]]:
     return set(names), names
 
 
-def read_acs_occupation_codes() -> dict[str, dict[str, object]]:
+def read_acs_occupation_codes() -> dict[str, OccupationDefinition]:
     """Read ACS occupation codes and their official 2018 SOC members."""
     workbook = openpyxl.load_workbook(
         ACS_OCCUPATION_CROSSWALK, read_only=True, data_only=True
     )
     sheet = workbook["ACS"]
-    occupations: dict[str, dict[str, object]] = {}
+    occupations: dict[str, OccupationDefinition] = {}
     current: str | None = None
     in_combines_block = False
 
@@ -197,7 +206,13 @@ def aggregate_pums(
     score_map = occupation_scores.set_index("OCCP")["ai_exposure"].to_dict()
     status_map = occupation_scores.set_index("OCCP")["occupation_match_status"].to_dict()
     totals = Counter()
-    industries: dict[str, Counter] = defaultdict(Counter)
+    industries: dict[str, dict[str, float]] = defaultdict(
+        lambda: {
+            "eligible_person_weight": 0.0,
+            "matched_person_weight": 0.0,
+            "weighted_score": 0.0,
+        }
+    )
     occupations: dict[str, Counter] = defaultdict(Counter)
 
     with ZipFile(PUMS_FILE) as archive:
