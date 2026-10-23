@@ -1,56 +1,44 @@
-# QWI research pipeline
+# Data preparation
 
-`qwi_pipeline.py` collects the complete QWI input for this research. The
-notebook only checks the files produced by the pipeline.
+Only two Python programs are part of the active workflow.
 
-## Run
-
-From the project root:
+## 1. QWI data
 
 ```bash
 python code/qwi_pipeline.py
 ```
 
-The command reads `CENSUS_API_KEY` from `.env` and prints progress while it
-downloads each state-age request. It first checks the key with one small Census
-request and stops immediately if Census rejects it.
-
-## Research sample
-
-- 2015Q1 through the latest expected QWI quarter;
-- all usable states plus D.C.;
-- ages 22–24 (`A03`) and all ages (`A00`);
-- four-digit NAICS industries;
-- private employment (`A05`), all sexes, unadjusted data; and
-- official hiring, employment, separation, rate, and status variables.
-
-Alaska is excluded because its series ends in 2016Q2. Michigan is excluded
-because its series ends in 2021Q4. Neither state can support the post-2022
-research outcome. These exclusions are also recorded in the validation file.
-
-The pipeline finds the latest quarter shared by every included state-age group.
-Raw responses retain everything returned by Census; the working CSV ends at
-that common quarter.
-
-The API request places only `industry` in the varying output dimensions. Census
-automatically returns the fixed state, age, ownership, seasonal-adjustment, and
-time fields. This keeps each request below the API's 400,000-cell limit.
-
-## Output
+This downloads three-digit QWI data for ages 22–24 (`A03`) and all ages
+(`A00`), using private-sector, all-sex, unadjusted observations. It reads the
+Census key from `.env`, preserves raw API responses, and creates:
 
 ```text
-data/
-  raw/qwi/<run_id>/
-    schema/                 # Census labels and definitions
-    responses/              # untouched API JSON, metadata, and errors
-  interim/qwi/
-    qwi_research.csv
-    qwi_research_validation.json
+data/interim/qwi/qwi_research_ind3.csv
+data/interim/qwi/qwi_research_ind3_validation.json
 ```
 
-Each raw run has a unique timestamp and is never overwritten. The interim CSV
-and validation file represent the latest run. Missing or suppressed values are
-not converted to zero, and the API key is never saved.
+If an interrupted download must be resumed:
 
-After the command finishes, open `notebooks/01_qwi_pipeline_test.ipynb` to
-inspect coverage, duplicate keys, missing measures, and status flags.
+```bash
+python code/qwi_pipeline.py --resume-run-id RUN_FOLDER_NAME
+```
+
+## 2. Industry AI exposure
+
+```bash
+python code/prepare_ai_exposure.py
+```
+
+This reads the preserved 2015–2019 ACS PUMS person file and official
+crosswalks. It keeps employed private wage-and-salary workers (`ESR` 1/2 and
+`COW` 1/2), uses person weight `PWGTP`, and creates:
+
+```text
+data/interim/ai_exposure/industry_ai_exposure_3digit.csv
+data/interim/ai_exposure/occupation_coverage.csv
+data/interim/ai_exposure/ai_exposure_validation.json
+```
+
+Ambiguous occupation or industry links remain missing. The program does not
+build the final panel, estimate employment trends, make figures, or run a
+regression. Those tasks belong in `notebooks/01_research_analysis.ipynb`.

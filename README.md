@@ -1,37 +1,37 @@
-# DA401 Capstone Project - Viet Nguyen
+# DA 401 Senior Research
 
-## Project Title
+## Research question
 
-AI or Overhiring? Explaining the Post-Pandemic Decline in Early-Career Hiring
+After accounting for unusually high pandemic-era employment growth, is greater
+exposure to generative AI associated with lower hiring among workers ages
+22–24?
 
-## Research Question
+This is an observational study. The results will be described as associations,
+not causal effects.
 
-After accounting for unusually high pandemic-era employment growth, is greater exposure to generative AI related to lower hiring among workers ages 22 to 24?
+## Simple workflow
 
-The project will consider both AI-related labor restructuring and a post-pandemic return toward normal employment levels, without assuming either explanation is correct.
+The project has two data-preparation programs and one main analysis notebook:
 
-## Planned Data Sources
+1. `code/qwi_pipeline.py` downloads and cleans Census QWI data.
+2. `code/prepare_ai_exposure.py` creates a three-digit industry AI-exposure
+   file from ACS PUMS occupation shares and the Eloundou et al. score.
+3. `notebooks/01_research_analysis.ipynb` merges the prepared data, constructs
+   the employment-trend measure, checks the sample, and performs the analysis.
 
-- [U.S. Census Bureau&#39;s Quarterly Workforce Indicators (QWI)](https://qwiexplorer.ces.census.gov/): hiring, employment, and separations by state, industry, age group, and quarter. Four-digit NAICS industries will be used if coverage permits.
-- Occupational AI exposure measures from Eloundou et al. (2024), aggregated to industries using pre-pandemic occupation-industry employment shares.
+The Python files handle API requests or processing that is too large for a
+notebook. Research decisions, diagnostics, charts, and models stay visible in
+the notebook.
 
-## Planned Methods
+## Project folders
 
-Using Python, the analysis will estimate how far actual 2022 employment in each state-industry group was above or below its pre-COVID trend. Descriptive visualizations and difference-in-differences panel regressions will then compare hiring changes before and after ChatGPT's introduction, accounting for AI exposure and pandemic employment growth.
+- `code/`: the two data-preparation programs
+- `notebooks/`: the main research analysis notebook
+- `data/raw/`: unchanged source files
+- `data/interim/`: prepared inputs for the notebook
+- `data/processed/`: the final analysis dataset, created later
+- `writing/`: proposal, literature review, research design, and paper drafts
+- `figures/`: final research figures
 
-The main model will include state-industry and quarter fixed effects, with standard errors clustered by industry. An event study will examine pre-existing trends; comparisons with older workers and alternative employment forecasts may be added if feasible.
-
-## Tentative Timeline
-
-- **September to early October:** Refine the literature review, research design, and variables.
-- **October:** Collect and clean data, estimate initial models, and present early results.
-- **November:** Complete the main analysis, draft the paper, and incorporate feedback.
-- **December:** Finalize the paper, document the code, and prepare the executive summary and poster.
-
-## Repository Structure
-
-- `notebooks/`: Main student-run research notebooks
-- `code/`: Small reusable functions that support the notebooks
-- `writing/`: Proposal, drafts, final paper
-- `figures/`: Plots, charts, visualizations
-- `data/`: Only small sample data (large files go in Google Drive)
+Local data, credentials, and AI context notes are excluded from Git. The
+researcher runs the notebook and makes every Git commit.
