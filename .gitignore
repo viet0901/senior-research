@@ -4,6 +4,7 @@ Thumbs.db
 
 # Python
 __pycache__/
+.pytest_cache/
 *.pyc
 *.pyo
 *.pyd
@@ -19,8 +20,9 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data (large files should go in Google Drive, not GitHub)
+# Local research data and generated diagnostics
 data/
+figures/ai_exposure/
 
 # Other
 *.log
