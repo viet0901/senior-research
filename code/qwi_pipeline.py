@@ -6,6 +6,7 @@ The notebook is only for checking the files produced by this pipeline.
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -83,6 +84,14 @@ def _safe_name(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9_-]+", "_", value).strip("_")
 
 
+def _working_stem(industry_level: str) -> str:
+    """Keep industry levels in separate working files; retain the old 4-digit name."""
+    level = industry_level.strip().upper()
+    if level not in {"A", "S", "3", "4", "5", "6"}:
+        raise ValueError(f"Unknown industry level: {industry_level!r}")
+    return "qwi_research" if level == "4" else f"qwi_research_ind{level}"
+
+
 def _state_fips(value: str | int) -> str:
     state = str(value).strip().zfill(2)
     if len(state) != 2 or not state.isdigit():
@@ -143,7 +152,7 @@ def check_api_key(session: requests.Session, api_key: str) -> None:
     except requests.RequestException as exc:
         raise RuntimeError(
             "Could not reach the Census API: " + _redact(str(exc), api_key)
-        ) from exc
+        ) from None
 
     if "Invalid Key" in response.text:
         raise RuntimeError(
@@ -173,7 +182,7 @@ def build_qwi_parameters(
 ) -> dict[str, str]:
     """Build one QWI request and check the important research selections.
 
-    The research defaults are four-digit industries, private employment,
+    The request defaults are four-digit industries, private employment,
     all sexes, and unadjusted quarterly values. ``A03`` represents ages 22–24;
     ``A00`` represents all ages.
     """
@@ -409,15 +418,21 @@ def run_qwi_download(
     project_root: str | Path = ".",
     pause_seconds: float = 0.25,
     show_progress: bool = True,
+    resume_run_id: str | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any], list[dict[str, str]]]:
     """Download QWI data, preserve the raw files, and make a working copy.
 
-    Returns ``(data, validation, errors)`` for review in the notebook. Every run
-    gets a unique raw directory, so previous source responses are not replaced.
+    Returns ``(data, validation, errors)`` for review in the notebook. New runs
+    get a unique raw directory; resuming reuses only matching saved responses.
     """
     root = Path(project_root)
-    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    working_stem = _working_stem(industry_level)
+    if resume_run_id is not None and not re.fullmatch(r"\d{8}T\d{12}Z", resume_run_id):
+        raise ValueError("resume_run_id must be an existing QWI timestamp directory name.")
+    run_id = resume_run_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     run_dir = root / "data" / "raw" / "qwi" / run_id
+    if resume_run_id is not None and not run_dir.is_dir():
+        raise FileNotFoundError(f"QWI run to resume does not exist: {run_dir}")
     response_dir = run_dir / "responses"
     interim_dir = root / "data" / "interim" / "qwi"
 
@@ -427,8 +442,15 @@ def run_qwi_download(
     check_api_key(session, api_key)
     if show_progress:
         print("API key accepted.")
-        print("Downloading current Census schema files...")
-    schema = _download_schema(session, run_dir / "schema")
+    if resume_run_id is None:
+        if show_progress:
+            print("Downloading current Census schema files...")
+        schema = _download_schema(session, run_dir / "schema")
+    else:
+        schema = {
+            name: pd.read_csv(run_dir / "schema" / name, dtype="string", keep_default_na=False)
+            for name in SCHEMA_FILES
+        }
     frames: list[pd.DataFrame] = []
     errors: list[dict[str, str]] = []
 
@@ -456,21 +478,44 @@ def run_qwi_download(
                     ownership_code.upper(),
                 ]
             )
+            raw_path = response_dir / f"{filename}.json"
+            metadata_path = response_dir / f"{filename}_metadata.json"
             try:
-                raw, raw_text, metadata = _download_qwi(
-                    session,
-                    api_key=api_key,
-                    state_fips=state,
-                    time_spec=time_spec,
-                    age_group=age,
-                    industry_level=industry_level,
-                    ownership_code=ownership_code,
-                )
-                _write_text(response_dir / f"{filename}.json", raw_text)
-                _write_json(response_dir / f"{filename}_metadata.json", metadata)
+                if raw_path.exists() != metadata_path.exists():
+                    raise RuntimeError(f"Only one file exists for saved QWI response {filename}.")
+                if raw_path.exists():
+                    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+                    expected = build_qwi_parameters(
+                        api_key=api_key, state_fips=state, time_spec=time_spec,
+                        age_group=age, industry_level=industry_level,
+                        ownership_code=ownership_code,
+                    )
+                    expected.pop("key")
+                    if metadata.get("request_parameters") != expected:
+                        raise RuntimeError(f"Saved request settings differ for {filename}.")
+                    payload = json.loads(raw_path.read_text(encoding="utf-8"))
+                    if not isinstance(payload, list) or not payload or not isinstance(payload[0], list):
+                        raise RuntimeError(f"Saved QWI response is invalid: {filename}.")
+                    raw = pd.DataFrame(payload[1:], columns=payload[0])
+                    if len(raw) != metadata.get("row_count"):
+                        raise RuntimeError(f"Saved QWI row count differs for {filename}.")
+                    reused = True
+                else:
+                    raw, raw_text, metadata = _download_qwi(
+                        session,
+                        api_key=api_key,
+                        state_fips=state,
+                        time_spec=time_spec,
+                        age_group=age,
+                        industry_level=industry_level,
+                        ownership_code=ownership_code,
+                    )
+                    _write_text(raw_path, raw_text)
+                    _write_json(metadata_path, metadata)
+                    reused = False
                 frames.append(clean_qwi(raw, schema))
                 if show_progress:
-                    print(f"saved {len(raw):,} rows")
+                    print(f"{'reused' if reused else 'saved'} {len(raw):,} rows")
             except Exception as exc:
                 errors.append(
                     {
@@ -500,6 +545,9 @@ def run_qwi_download(
         {
             "run_id": run_id,
             "raw_directory": str(run_dir.relative_to(root)),
+            "industry_level": industry_level,
+            "working_file": str((interim_dir / f"{working_stem}.csv").relative_to(root)),
+            "working_file_written": not errors,
             "latest_common_period": latest_common_period,
             "rows_returned_before_common_period_filter": before_common_period_filter,
             "successful_request_count": len(frames),
@@ -507,18 +555,23 @@ def run_qwi_download(
         }
     )
 
-    interim_dir.mkdir(parents=True, exist_ok=True)
-    combined.to_csv(interim_dir / "qwi_research.csv", index=False)
-    _write_json(interim_dir / "qwi_research_validation.json", validation)
+    # A partial download is useful for diagnosis but must not replace a
+    # previously complete working extract.
+    if not errors:
+        interim_dir.mkdir(parents=True, exist_ok=True)
+        combined.to_csv(interim_dir / f"{working_stem}.csv", index=False)
+        _write_json(interim_dir / f"{working_stem}_validation.json", validation)
     return combined, validation, errors
 
 
 def run_research_pipeline(
     *,
     end_quarter: str | None = None,
+    industry_level: str = "3",
     project_root: str | Path | None = None,
+    resume_run_id: str | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any], list[dict[str, str]]]:
-    """Run the complete QWI collection with the project's fixed design."""
+    """Collect the research QWI series (three-digit industries by default)."""
     from dotenv import load_dotenv
 
     root = (
@@ -539,6 +592,7 @@ def run_research_pipeline(
     print(f"Period requested: {time_spec}")
     print(f"Geographies: {len(RESEARCH_STATE_FIPS)} states/D.C.")
     print("Age groups: A03 (ages 22-24) and A00 (all ages)")
+    print(f"Industry level: {industry_level}")
     print("Excluded:")
     for state, reason in EXCLUDED_STATES.items():
         print(f"  {state}: {reason}")
@@ -548,26 +602,27 @@ def run_research_pipeline(
         states=RESEARCH_STATE_FIPS,
         time_spec=time_spec,
         age_groups=("A03", "A00"),
-        industry_level="4",
+        industry_level=industry_level,
         ownership_code="A05",
         project_root=root,
+        resume_run_id=resume_run_id,
     )
     validation["excluded_states"] = EXCLUDED_STATES
-    _write_json(root / "data/interim/qwi/qwi_research_validation.json", validation)
-
     print(f"\nRaw data: {validation['raw_directory']}")
-    print("Working data: data/interim/qwi/qwi_research.csv")
-    print(f"Rows: {len(data):,}")
-    print(f"Latest common quarter: {validation['latest_common_period']}")
-
     if errors:
         raise RuntimeError(
             f"{len(errors)} request(s) failed. Raw successes were preserved; "
-            "review errors.json before using the working file."
+            "the previous working file was not replaced. Review errors.json."
         )
+    print(f"Working data: {validation['working_file']}")
+    print(f"Rows: {len(data):,}")
+    print(f"Latest common quarter: {validation['latest_common_period']}")
     print("Pipeline completed without request errors.")
     return data, validation, errors
 
 
 if __name__ == "__main__":
-    run_research_pipeline()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--resume-run-id", help="Complete an interrupted raw QWI run.")
+    args = parser.parse_args()
+    run_research_pipeline(resume_run_id=args.resume_run_id)
