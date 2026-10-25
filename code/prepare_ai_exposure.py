@@ -22,10 +22,8 @@ from pathlib import Path
 from typing import TypedDict
 from zipfile import ZipFile
 
-import numpy as np
 import openpyxl
 import pandas as pd
-
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data/raw"
@@ -82,9 +80,7 @@ def read_qwi_industries() -> tuple[set[str], dict[str, str]]:
 
 def read_acs_occupation_codes() -> dict[str, OccupationDefinition]:
     """Read ACS occupation codes and their official 2018 SOC members."""
-    workbook = openpyxl.load_workbook(
-        ACS_OCCUPATION_CROSSWALK, read_only=True, data_only=True
-    )
+    workbook = openpyxl.load_workbook(ACS_OCCUPATION_CROSSWALK, read_only=True, data_only=True)
     sheet = workbook["ACS"]
     occupations: dict[str, OccupationDefinition] = {}
     current: str | None = None
@@ -244,7 +240,9 @@ def aggregate_pums(
                     exposure = occp.map(score_map)
 
                     totals["industry_mapped_weight"] += int(worker_weights[target.notna()].sum())
-                    totals["occupation_scored_weight"] += int(worker_weights[exposure.notna()].sum())
+                    totals["occupation_scored_weight"] += int(
+                        worker_weights[exposure.notna()].sum()
+                    )
                     joint = target.notna() & exposure.notna()
                     totals["jointly_matched_weight"] += int(worker_weights[joint].sum())
 
@@ -252,18 +250,28 @@ def aggregate_pums(
                         {
                             "industry": target,
                             "weight": worker_weights.to_numpy(),
-                            "weighted_score": worker_weights.to_numpy() * exposure.fillna(0).to_numpy(),
-                            "matched_weight": worker_weights.to_numpy() * exposure.notna().to_numpy(),
+                            "weighted_score": worker_weights.to_numpy()
+                            * exposure.fillna(0).to_numpy(),
+                            "matched_weight": worker_weights.to_numpy()
+                            * exposure.notna().to_numpy(),
                         }
                     ).dropna(subset=["industry"])
                     for industry, values in industry_chunk.groupby("industry"):
-                        industries[str(industry)]["eligible_person_weight"] += int(values["weight"].sum())
-                        industries[str(industry)]["matched_person_weight"] += int(values["matched_weight"].sum())
-                        industries[str(industry)]["weighted_score"] += float(values["weighted_score"].sum())
+                        industries[str(industry)]["eligible_person_weight"] += int(
+                            values["weight"].sum()
+                        )
+                        industries[str(industry)]["matched_person_weight"] += int(
+                            values["matched_weight"].sum()
+                        )
+                        industries[str(industry)]["weighted_score"] += float(
+                            values["weighted_score"].sum()
+                        )
 
-                    occupation_chunk = pd.DataFrame(
-                        {"OCCP": occp, "weight": worker_weights.to_numpy()}
-                    ).groupby("OCCP", as_index=False)["weight"].sum()
+                    occupation_chunk = (
+                        pd.DataFrame({"OCCP": occp, "weight": worker_weights.to_numpy()})
+                        .groupby("OCCP", as_index=False)["weight"]
+                        .sum()
+                    )
                     for code, weight in occupation_chunk.itertuples(index=False, name=None):
                         occupations[str(code)]["person_weight"] += int(weight)
 

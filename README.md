@@ -35,3 +35,17 @@ the notebook.
 
 Local data, credentials, and AI context notes are excluded from Git. The
 researcher runs the notebook and makes every Git commit.
+
+## Code checks
+
+Install the development tools and run the same checks used by GitHub Actions:
+
+```bash
+pip install -r requirements-dev.txt
+ruff check code tests
+ruff format --check code tests
+pytest -q
+```
+
+The tests use synthetic inputs and do not require the local research data or a
+Census API key.

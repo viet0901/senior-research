@@ -21,7 +21,6 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-
 QWI_API_URL = "https://api.census.gov/data/timeseries/qwi/sa"
 QWI_SCHEMA_URL = "https://lehd.ces.census.gov/data/schema/latest"
 
@@ -51,19 +50,63 @@ SCHEMA_FILES = [
 # series end before the post-2022 study period. The validation file records
 # these exclusions explicitly.
 ALL_STATE_FIPS = (
-    "01", "02", "04", "05", "06", "08", "09", "10", "11", "12", "13",
-    "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25",
-    "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36",
-    "37", "38", "39", "40", "41", "42", "44", "45", "46", "47", "48",
-    "49", "50", "51", "53", "54", "55", "56",
+    "01",
+    "02",
+    "04",
+    "05",
+    "06",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36",
+    "37",
+    "38",
+    "39",
+    "40",
+    "41",
+    "42",
+    "44",
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51",
+    "53",
+    "54",
+    "55",
+    "56",
 )
 EXCLUDED_STATES = {
     "02": "Alaska QWI ends in 2016Q2.",
     "26": "Michigan QWI ends in 2021Q4.",
 }
-RESEARCH_STATE_FIPS = tuple(
-    state for state in ALL_STATE_FIPS if state not in EXCLUDED_STATES
-)
+RESEARCH_STATE_FIPS = tuple(state for state in ALL_STATE_FIPS if state not in EXCLUDED_STATES)
 RESEARCH_START_QUARTER = "2015-Q1"
 
 
@@ -103,10 +146,7 @@ def _time_spec(value: str) -> str:
     value = value.strip()
     quarter = r"\d{4}-Q[1-4]"
     if not re.fullmatch(rf"(?:{quarter}|from {quarter} to {quarter})", value):
-        raise ValueError(
-            "time_spec must look like '2022-Q1' or "
-            "'from 2015-Q1 to 2022-Q4'."
-        )
+        raise ValueError("time_spec must look like '2022-Q1' or 'from 2015-Q1 to 2022-Q4'.")
     return value
 
 
@@ -244,9 +284,7 @@ def _download_qwi(
             raise RuntimeError("Census rejected CENSUS_API_KEY.") from exc
         raise RuntimeError(
             "QWI returned a non-JSON response: "
-            + _redact(
-                re.sub(r"<[^>]+>", " ", response.text[:200]).strip(), api_key
-            )
+            + _redact(re.sub(r"<[^>]+>", " ", response.text[:200]).strip(), api_key)
         ) from exc
     if not isinstance(payload, list) or not payload or not isinstance(payload[0], list):
         raise RuntimeError("QWI returned an unexpected response structure.")
@@ -308,8 +346,14 @@ def clean_qwi(raw: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> pd.DataFram
     data = raw.copy()
 
     text_columns = [
-        "state", "industry", "ind_level", "agegrp", "sex", "ownercode",
-        "seasonadj", "time",
+        "state",
+        "industry",
+        "ind_level",
+        "agegrp",
+        "sex",
+        "ownercode",
+        "seasonadj",
+        "time",
     ]
     for column in text_columns:
         data[column] = data[column].astype("string").str.strip()
@@ -357,9 +401,7 @@ def clean_qwi(raw: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> pd.DataFram
     industries = industries.drop_duplicates(["industry", "ind_level"]).rename(
         columns={"label": "industry_name"}
     )
-    data = data.merge(
-        industries, on=["industry", "ind_level"], how="left", validate="many_to_one"
-    )
+    data = data.merge(industries, on=["industry", "ind_level"], how="left", validate="many_to_one")
 
     return data.sort_values(["state", "industry", "agegrp", "year", "quarter"]).reset_index(
         drop=True
@@ -372,9 +414,7 @@ def validate_qwi(data: pd.DataFrame) -> dict[str, Any]:
     flag_counts: dict[str, dict[str, int]] = {}
     for column in STATUS_COLUMNS:
         counts = data[column].astype("string").fillna("<missing>").value_counts()
-        flag_counts[column] = {
-            str(value): int(count) for value, count in counts.items()
-        }
+        flag_counts[column] = {str(value): int(count) for value, count in counts.items()}
     return {
         "observation_count": len(data),
         "states": sorted(data["state"].dropna().astype(str).unique().tolist()),
@@ -464,8 +504,7 @@ def run_qwi_download(
             request_number += 1
             if show_progress:
                 print(
-                    f"[{request_number}/{requests_to_make}] "
-                    f"state {state}, age group {age}...",
+                    f"[{request_number}/{requests_to_make}] state {state}, age group {age}...",
                     end=" ",
                     flush=True,
                 )
@@ -486,15 +525,22 @@ def run_qwi_download(
                 if raw_path.exists():
                     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
                     expected = build_qwi_parameters(
-                        api_key=api_key, state_fips=state, time_spec=time_spec,
-                        age_group=age, industry_level=industry_level,
+                        api_key=api_key,
+                        state_fips=state,
+                        time_spec=time_spec,
+                        age_group=age,
+                        industry_level=industry_level,
                         ownership_code=ownership_code,
                     )
                     expected.pop("key")
                     if metadata.get("request_parameters") != expected:
                         raise RuntimeError(f"Saved request settings differ for {filename}.")
                     payload = json.loads(raw_path.read_text(encoding="utf-8"))
-                    if not isinstance(payload, list) or not payload or not isinstance(payload[0], list):
+                    if (
+                        not isinstance(payload, list)
+                        or not payload
+                        or not isinstance(payload[0], list)
+                    ):
                         raise RuntimeError(f"Saved QWI response is invalid: {filename}.")
                     raw = pd.DataFrame(payload[1:], columns=payload[0])
                     if len(raw) != metadata.get("row_count"):
