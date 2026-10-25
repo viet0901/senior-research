@@ -13,3 +13,4 @@ openpyxl==3.1.5
 # Statistical analysis and visualization
 matplotlib==3.10.8
 statsmodels==0.15.0
+pyfixest==0.60.0
