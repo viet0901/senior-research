@@ -78,19 +78,24 @@ def test_build_industry_map_accepts_only_one_valid_three_digit_target(
     sheet = workbook.active
     sheet.title = "2007 to 2022 Industry Crosswalk"
     sheet.cell(row=8, column=9, value="0170")
-    sheet.cell(row=8, column=14, value="111")
+    sheet.cell(row=8, column=14, value="111 exc. 1112")
     sheet.cell(row=9, column=9, value="0180")
-    sheet.cell(row=9, column=14, value="111, 112")
-    sheet.cell(row=10, column=9, value="0190")
-    sheet.cell(row=10, column=14, value="999")
-    sheet.cell(row=11, column=9, value="0270")
-    sheet.cell(row=11, column=14, value="112, 1123")
+    sheet.cell(row=9, column=14, value="111")
+    sheet.cell(row=10, column=14, value="112")
+    sheet.cell(row=11, column=9, value="0190")
+    sheet.cell(row=11, column=14, value="999")
+    sheet.cell(row=12, column=9, value="0270")
+    sheet.cell(row=12, column=14, value="112, 1123")
+    sheet.cell(row=13, column=9, value="0280")
+    sheet.cell(row=13, column=14, value="55")
+    sheet.cell(row=14, column=9, value="0290")
+    sheet.cell(row=14, column=14, value="Part of 44, 45")
     workbook.save(workbook_path)
     monkeypatch.setattr(prepare_ai_exposure, "INDUSTRY_CROSSWALK", workbook_path)
 
-    result = prepare_ai_exposure.build_industry_map({"111", "112"})
+    result = prepare_ai_exposure.build_industry_map({"111", "112", "441", "445", "451", "551"})
 
-    assert result == {"0170": "111", "0270": "112"}
+    assert result == {"0170": "111", "0270": "112", "0280": "551"}
 
 
 def test_require_files_names_missing_inputs(

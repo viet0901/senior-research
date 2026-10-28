@@ -172,24 +172,41 @@ def build_occupation_scores() -> pd.DataFrame:
 
 
 def build_industry_map(qwi_codes: set[str]) -> dict[str, str]:
-    """Map a 2017 ACS industry only when all 2022 targets share one prefix."""
+    """Map a 2017 ACS industry only when all 2022 targets share one prefix.
+
+    The Census workbook uses continuation rows and descriptions such as
+    ``722 exc. 7224``.  All rows for one ACS code must therefore be considered
+    together before deciding whether its 2022 industries have one three-digit
+    QWI target.
+    """
     workbook = openpyxl.load_workbook(INDUSTRY_CROSSWALK, read_only=True, data_only=True)
     sheet = workbook["2007 to 2022 Industry Crosswalk"]
-    mapping: dict[str, str] = {}
+    targets_by_old_code: dict[str, set[str]] = defaultdict(set)
+    current_old_code: str | None = None
 
     for row in sheet.iter_rows(min_row=8, values_only=True):
         old_code, new_codes = row[8], row[13]
-        if old_code is None or new_codes is None:
+
+        if old_code is not None:
+            old = str(old_code).strip().zfill(4)
+            current_old_code = old if re.fullmatch(r"\d{4}", old) else None
+
+        if current_old_code is None or new_codes is None:
             continue
-        old = str(old_code).strip().zfill(4)
-        options = [item.strip() for item in str(new_codes).split(",")]
-        if not re.fullmatch(r"\d{4}", old):
-            continue
-        if not options or any(not re.fullmatch(r"\d{3,6}", item) for item in options):
-            continue
-        targets = {item[:3] for item in options}
-        if len(targets) == 1 and next(iter(targets)) in qwi_codes:
-            mapping[old] = next(iter(targets))
+
+        for code in re.findall(r"(?<!\d)\d{2,6}(?!\d)", str(new_codes)):
+            if len(code) >= 3:
+                targets_by_old_code[current_old_code].add(code[:3])
+            else:
+                sector_targets = {target for target in qwi_codes if target.startswith(code)}
+                targets_by_old_code[current_old_code].update(sector_targets or {code})
+
+    mapping: dict[str, str] = {}
+    for old_code, targets in targets_by_old_code.items():
+        if len(targets) == 1:
+            target = next(iter(targets))
+            if target in qwi_codes:
+                mapping[old_code] = target
 
     return mapping
 
