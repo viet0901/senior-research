@@ -41,4 +41,6 @@ data/interim/ai_exposure/ai_exposure_validation.json
 
 Ambiguous occupation or industry links remain missing. The program does not
 build the final panel, estimate employment trends, make figures, or run a
-regression. Those tasks belong in `notebooks/01_research_analysis.ipynb`.
+regression. Final panel construction belongs in
+`notebooks/01_data_preparation.ipynb`; figures and models belong in
+`notebooks/02_research_analysis.ipynb`.

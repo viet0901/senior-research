@@ -43,7 +43,8 @@ Which methods or models will you use?
 - The three-digit industry AI-exposure measure and final analysis panel are complete
 - Descriptive analysis and preliminary fixed-effects models are complete
 - Model diagnostics show heavy-tailed residuals, but the initial conclusion is not driven by a small number of extreme observations
-- Secondary-outcome, event-study, and final sensitivity analyses are in progress
+- Secondary-outcome, event-study, and industry-seasonality analyses are complete
+- Small-cell, employment-trend-validation, exposure-coverage, and clustering checks remain
 
 ## Expected Timeline
 
@@ -59,7 +60,7 @@ What do you expect to produce every week?
 ## Repository Structure
 
 - `code/`: Data collection and preparation programs
-- `notebooks/`: Data preparation, analysis, visualizations, and models
+- `notebooks/`: One notebook for final data preparation and one for analysis
 - `writing/`: Proposal, literature review, research design, and paper drafts
 - `figures/`: Research plots and visualizations
 - `data/raw/`: Unchanged source data
@@ -71,13 +72,14 @@ The data folders are stored locally and excluded from Git. The researcher runs t
 
 ## Project Workflow
 
-The project uses two data-preparation programs and one main notebook:
+The project uses two data-preparation programs and two notebooks:
 
 1. `code/qwi_pipeline.py` downloads and validates the Census QWI data.
 2. `code/prepare_ai_exposure.py` constructs the three-digit industry AI-exposure measure.
-3. `notebooks/01_research_analysis.ipynb` creates the final panel, documents research decisions, performs diagnostics, produces figures, and estimates the models.
+3. `notebooks/01_data_preparation.ipynb` constructs, checks, and saves the final analysis panel.
+4. `notebooks/02_research_analysis.ipynb` loads that panel and contains the descriptive analysis, figures, models, diagnostics, and sensitivity checks.
 
-Python files are used only for API requests and large-data preparation. The research analysis remains in the notebook so that each decision and result can be reviewed clearly.
+Python files are used only for API requests and large-data preparation. The notebooks keep final data construction separate from the research analysis so that each decision and result can be reviewed clearly.
 
 ## Reproduce the Project
 
@@ -97,13 +99,13 @@ python code/prepare_ai_exposure.py
 jupyter lab
 ```
 
-See [code/README.md](code/README.md) for the required local ACS and crosswalk files. Then open `notebooks/01_research_analysis.ipynb` and run the notebook in order. Large source data, generated data, credentials, and local research context are not committed to Git.
+See [code/README.md](code/README.md) for the required local ACS and crosswalk files. Then run `notebooks/01_data_preparation.ipynb` followed by `notebooks/02_research_analysis.ipynb`. Large source data, generated data, credentials, and local research context are not committed to Git.
 
 ## Important Research Notes
 
 - The analysis uses three-digit industries because the ACS, occupation-exposure, and QWI classifications cannot always be linked defensibly at a more detailed level.
 - The AI-exposure measure represents potential task exposure, not actual AI adoption or worker replacement.
-- Approximately 42.2% of eligible ACS worker weight can be linked jointly to a usable industry and occupation exposure score.
+- Approximately 50.8% of eligible ACS worker weight can be linked jointly to a usable industry and occupation exposure score.
 - Missing and Census-suppressed observations remain missing rather than being replaced with zero.
 - The primary estimates are interpreted as associations, not causal effects.
 
