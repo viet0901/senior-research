@@ -36,6 +36,7 @@ Which methods or models will you use?
 - Industry-clustered standard errors
 - Event-study and sensitivity analyses
 - Hiring rates as the primary outcome and hire counts as a secondary outcome
+- Small-cell, fixed-weight, exposure-coverage, trend-window, and clustering checks
 
 ## Current Status
 
@@ -44,7 +45,8 @@ Which methods or models will you use?
 - Descriptive analysis and preliminary fixed-effects models are complete
 - Model diagnostics show heavy-tailed residuals, but the initial conclusion is not driven by a small number of extreme observations
 - Secondary-outcome, event-study, and industry-seasonality analyses are complete
-- Small-cell, employment-trend-validation, exposure-coverage, and clustering checks remain
+- Small-cell, employment-trend-validation, exposure-coverage, clustering, and industry-influence checks are complete
+- The remaining research work is to consolidate the final tables and write the results and limitations sections
 
 ## Expected Timeline
 
@@ -108,6 +110,8 @@ See [code/README.md](code/README.md) for the required local ACS and crosswalk fi
 - Approximately 50.8% of eligible ACS worker weight can be linked jointly to a usable industry and occupation exposure score.
 - Missing and Census-suppressed observations remain missing rather than being replaced with zero.
 - The primary estimates are interpreted as associations, not causal effects.
+- The hiring-rate conclusion is stable across the final sensitivity checks; the negative hire-count relationship remains suggestive because its statistical significance varies across specifications.
+- The initial research-design PDF proposed four-digit industries and a linear primary employment trend. Data diagnostics led to the documented use of three-digit industries and a log-linear primary trend.
 
 ## Code Checks
 

@@ -97,6 +97,12 @@ def read_acs_occupation_codes() -> dict[str, OccupationDefinition]:
             current = code
             occupations[current] = {"title": title, "soc_header": soc, "members": []}
             in_combines_block = False
+        elif code:
+            # A nonempty range such as ``0500-0960`` starts the next broad
+            # occupation section. It is not a continuation of the previous
+            # ACS occupation's ``Combines:`` list.
+            current = None
+            in_combines_block = False
         elif current and soc == "Combines:":
             in_combines_block = True
         elif current and in_combines_block and re.fullmatch(r"\d{2}-\d{4}", soc):

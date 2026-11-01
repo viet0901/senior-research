@@ -70,6 +70,38 @@ def test_build_occupation_scores_keeps_only_unambiguous_scores(
     assert result.loc[["0020", "0030", "0040", "0050"], "ai_exposure"].isna().all()
 
 
+def test_read_acs_occupation_codes_stops_at_next_section_heading(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workbook_path = tmp_path / "occupation_codes.xlsx"
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "ACS"
+    sheet.cell(row=11, column=1, value="0440")
+    sheet.cell(row=11, column=2, value="11-91XX")
+    sheet.cell(row=11, column=3, value="Other managers")
+    sheet.cell(row=12, column=2, value="Combines:")
+    sheet.cell(row=13, column=2, value="11-9171")
+    sheet.cell(row=14, column=1, value="0500-0960")
+    sheet.cell(row=14, column=2, value="13-0000")
+    sheet.cell(row=14, column=3, value="Business and financial occupations")
+    sheet.cell(row=15, column=1, value="0500")
+    sheet.cell(row=15, column=2, value="13-1011")
+    sheet.cell(row=15, column=3, value="Agents and business managers")
+    workbook.save(workbook_path)
+
+    monkeypatch.setattr(
+        prepare_ai_exposure,
+        "ACS_OCCUPATION_CROSSWALK",
+        workbook_path,
+    )
+
+    result = prepare_ai_exposure.read_acs_occupation_codes()
+
+    assert result["0440"]["members"] == ["119171"]
+    assert result["0500"]["members"] == ["131011"]
+
+
 def test_build_industry_map_accepts_only_one_valid_three_digit_target(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
