@@ -46,7 +46,9 @@ Which methods or models will you use?
 - Model diagnostics show heavy-tailed residuals, but the initial conclusion is not driven by a small number of extreme observations
 - Secondary-outcome, event-study, and industry-seasonality analyses are complete
 - Small-cell, employment-trend-validation, exposure-coverage, clustering, and industry-influence checks are complete
-- The remaining research work is to consolidate the final tables and write the results and limitations sections
+- The same-quarter timing comparison and rate-count-employment decomposition are complete
+- Paper-ready results tables and a full working manuscript are available under `writing/`
+- The remaining work is substantive revision, advisor feedback, and final formatting
 
 ## Expected Timeline
 
@@ -70,7 +72,7 @@ What do you expect to produce every week?
 - `data/processed/`: Final analysis data
 - `tests/`: Unit tests for the data-preparation programs
 
-The data folders are stored locally and excluded from Git. The researcher runs the notebook and creates every Git commit.
+The data folders are stored locally and excluded from Git. The researcher runs and verifies the notebooks, and repository commits are created only at the researcher's direction.
 
 ## Project Workflow
 
@@ -111,6 +113,7 @@ See [code/README.md](code/README.md) for the required local ACS and crosswalk fi
 - Missing and Census-suppressed observations remain missing rather than being replaced with zero.
 - The primary estimates are interpreted as associations, not causal effects.
 - The hiring-rate conclusion is stable across the final sensitivity checks; the negative hire-count relationship remains suggestive because its statistical significance varies across specifications.
+- The negative hire-count estimate is accounted for mainly by a smaller young-worker employment base rather than a persistently lower reconstructed hiring rate.
 - The initial research-design PDF proposed four-digit industries and a linear primary employment trend. Data diagnostics led to the documented use of three-digit industries and a log-linear primary trend.
 
 ## Code Checks
