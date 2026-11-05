@@ -47,7 +47,7 @@ Which methods or models will you use?
 - Secondary-outcome, event-study, and industry-seasonality analyses are complete
 - Small-cell, employment-trend-validation, exposure-coverage, clustering, and industry-influence checks are complete
 - The same-quarter timing comparison and rate-count-employment decomposition are complete
-- Paper-ready results tables and a full working manuscript are available under `writing/`
+- The working manuscript is maintained outside the repository
 - The remaining work is substantive revision, advisor feedback, and final formatting
 
 ## Expected Timeline
