@@ -123,6 +123,7 @@ credentials, and local research context are not committed to Git.
 - Missing and Census-suppressed observations remain missing rather than being replaced with zero.
 - The primary estimates are interpreted as associations, not causal effects.
 - The pooled Poisson estimates are statistically unclear for both the hiring rate and hire count, and this conclusion is stable across the final sensitivity checks.
+- Comparing the same Poisson sample with and without the all-age employment-above-trend adjustment changes the hiring-rate estimate from -0.76% to -0.38% and the hire-count estimate from -0.54% to -1.19%; all four estimates remain statistically unclear.
 - Quarter-specific Poisson estimates show that an early negative hiring-rate difference fades by 2025 Q3 while negative count differences persist, but jointly nonzero earlier coefficients prevent a causal interpretation.
 - The earlier positive-count log-linear decomposition remains a sensitivity analysis rather than the primary model.
 - The initial research-design PDF proposed four-digit industries and a linear primary employment trend. Data diagnostics led to the documented use of three-digit industries and a log-linear primary trend.
