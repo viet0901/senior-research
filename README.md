@@ -74,7 +74,7 @@ What do you expect to produce every week?
 - `data/processed/`: Final analysis data
 - `tests/`: Unit tests for the data-preparation programs
 
-The data folders are stored locally and excluded from Git. The researcher verifies the notebooks. Each completed repository change is validated and committed separately; pushes occur only at the researcher's direction.
+Research data files are stored locally and excluded from Git; `data/README.md` is tracked to document the folder structure. The researcher verifies the notebooks. Each completed repository change is validated and committed separately; pushes occur only at the researcher's direction.
 
 ## Project Workflow
 

@@ -22,7 +22,8 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Local research data and generated diagnostics
-data/
+data/*
+!data/README.md
 figures/ai_exposure/
 
 # Other

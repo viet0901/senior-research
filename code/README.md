@@ -1,6 +1,8 @@
-# Data preparation
+# Data collection and preparation code
 
-Only two Python programs are part of the active workflow.
+Only two Python programs are part of the active workflow. They handle API
+requests and heavier source-data preparation; final panel construction and
+research analysis remain in the notebooks.
 
 ## 1. QWI data
 
@@ -49,9 +51,9 @@ data/interim/ai_exposure/occupation_coverage.csv
 data/interim/ai_exposure/ai_exposure_validation.json
 ```
 
-Ambiguous occupation or industry links remain missing. The program does not
-build the final panel, estimate employment trends, make figures, or run a
-regression. Final panel construction belongs in
+Ambiguous occupation or industry links remain missing. Neither program builds
+the final panel, estimates employment trends, makes figures, or runs a model.
+Final panel construction belongs in
 `notebooks/01_data_preparation.ipynb`; figures and models belong in
 `notebooks/02_research_analysis.ipynb`.
 
