@@ -97,7 +97,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Copy `.env.template` to `.env`, add a valid Census API key, and run the preparation programs:
+Copy `.env.template` to `.env` and add a valid Census API key. The QWI program
+downloads its own source data. Before running the exposure program after a
+fresh clone, download the five ACS and AI source files listed in
+[data/README.md](data/README.md).
+
+Then run the preparation programs:
 
 ```bash
 python code/qwi_pipeline.py
@@ -105,7 +110,10 @@ python code/prepare_ai_exposure.py
 jupyter lab
 ```
 
-See [code/README.md](code/README.md) for the required local ACS and crosswalk files. Then run `notebooks/01_data_preparation.ipynb` followed by `notebooks/02_research_analysis.ipynb`. Large source data, generated data, credentials, and local research context are not committed to Git.
+See [code/README.md](code/README.md) for program details. Then run
+`notebooks/01_data_preparation.ipynb` followed by
+`notebooks/02_research_analysis.ipynb`. Large source data, generated data,
+credentials, and local research context are not committed to Git.
 
 ## Important Research Notes
 
