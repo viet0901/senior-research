@@ -37,6 +37,7 @@ Which methods or models will you use?
 - Industry-clustered standard errors
 - Quarter-specific AI-exposure interactions and matched-quarter comparisons
 - Linear and logged-outcome sensitivity analyses
+- Poisson convergence, separation, dispersion, and calibration checks
 - Small-cell, fixed-weight, exposure-coverage, trend-window, and clustering checks
 
 ## Current Status
