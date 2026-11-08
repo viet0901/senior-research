@@ -32,18 +32,19 @@ Which methods or models will you use?
 
 - Descriptive statistics and visualizations
 - Log-linear pre-COVID employment trends for each state-industry group
-- Fixed-effects panel regression with state-industry and quarter fixed effects
+- Fixed-effects Poisson GLMs with state-industry and quarter fixed effects
+- An employment offset for the hiring-rate specification
 - Industry-clustered standard errors
-- Event-study and sensitivity analyses
-- Hiring rates as the primary outcome and hire counts as a secondary outcome
+- Quarter-specific AI-exposure interactions and matched-quarter comparisons
+- Linear and logged-outcome sensitivity analyses
 - Small-cell, fixed-weight, exposure-coverage, trend-window, and clustering checks
 
 ## Current Status
 
 - QWI and ACS PUMS data-preparation programs are complete
 - The three-digit industry AI-exposure measure and final analysis panel are complete
-- Descriptive analysis and preliminary fixed-effects models are complete
-- Model diagnostics show heavy-tailed residuals, but the initial conclusion is not driven by a small number of extreme observations
+- Outcome-distribution checks and fixed-effects Poisson GLMs are complete
+- The primary rate model uses hire counts with log average employment as an offset; the count model uses the same outcome without the offset
 - Secondary-outcome, event-study, and industry-seasonality analyses are complete
 - Small-cell, employment-trend-validation, exposure-coverage, clustering, and industry-influence checks are complete
 - The same-quarter timing comparison and rate-count-employment decomposition are complete
@@ -65,14 +66,14 @@ What do you expect to produce every week?
 
 - `code/`: Data collection and preparation programs
 - `notebooks/`: One notebook for final data preparation and one for analysis
-- `writing/`: Proposal, literature review, research design, and paper drafts
+- `writing/`: Proposal, literature review, and research-design materials
 - `figures/`: Research plots and visualizations
 - `data/raw/`: Unchanged source data
 - `data/interim/`: Prepared inputs for the notebook
 - `data/processed/`: Final analysis data
 - `tests/`: Unit tests for the data-preparation programs
 
-The data folders are stored locally and excluded from Git. The researcher runs and verifies the notebooks, and repository commits are created only at the researcher's direction.
+The data folders are stored locally and excluded from Git. The researcher verifies the notebooks. Each completed repository change is validated and committed separately; pushes occur only at the researcher's direction.
 
 ## Project Workflow
 
@@ -112,8 +113,9 @@ See [code/README.md](code/README.md) for the required local ACS and crosswalk fi
 - Approximately 50.8% of eligible ACS worker weight can be linked jointly to a usable industry and occupation exposure score.
 - Missing and Census-suppressed observations remain missing rather than being replaced with zero.
 - The primary estimates are interpreted as associations, not causal effects.
-- The hiring-rate conclusion is stable across the final sensitivity checks; the negative hire-count relationship remains suggestive because its statistical significance varies across specifications.
-- The negative hire-count estimate is accounted for mainly by a smaller young-worker employment base rather than a persistently lower reconstructed hiring rate.
+- The pooled Poisson estimates are statistically unclear for both the hiring rate and hire count, and this conclusion is stable across the final sensitivity checks.
+- Quarter-specific Poisson estimates show that an early negative hiring-rate difference fades by 2025 Q3 while negative count differences persist, but jointly nonzero earlier coefficients prevent a causal interpretation.
+- The earlier positive-count log-linear decomposition remains a sensitivity analysis rather than the primary model.
 - The initial research-design PDF proposed four-digit industries and a linear primary employment trend. Data diagnostics led to the documented use of three-digit industries and a log-linear primary trend.
 
 ## Code Checks
