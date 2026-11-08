@@ -8,7 +8,7 @@ AI Exposure or Post-Pandemic Employment Adjustment? Explaining the Decline in Ea
 
 What question are you trying to answer?
 
-- Working Project Question: After accounting for employment growth above pre-COVID trends, is greater generative AI exposure associated with a larger decline in hiring among workers ages 22 to 24?
+- Working Project Question: After accounting for employment above or below its pre-COVID predicted trend, is greater generative AI exposure associated with lower hiring among workers ages 22 to 24 after 2022?
 
 This is an observational study, so the results are interpreted as associations rather than causal effects.
 
@@ -17,13 +17,15 @@ This is an observational study, so the results are interpreted as associations r
 Where is your data coming from?
 
 - [U.S. Census Bureau Quarterly Workforce Indicators (QWI)](https://www.census.gov/data/developers/data-sets/qwi.html)
-- [2015-2019 American Community Survey Public Use Microdata Sample (ACS PUMS)](https://www.census.gov/programs-surveys/acs/microdata/documentation.2019.html)
+- [2015-2019 American Community Survey Public Use Microdata Sample (ACS PUMS)](https://www.census.gov/programs-surveys/acs/microdata/documentation/2019.html)
 - [Census industry and occupation code lists and crosswalks](https://www.census.gov/topics/employment/industry-occupation/guidance/code-lists.html)
 - [GPT-4 occupation-level AI exposure scores](https://github.com/openai/GPTs-are-GPTs/blob/main/data/occ_level.csv) from [Eloundou et al.](https://doi.org/10.1126/science.adj0998)
 
 ## Related Research
 
 - [Tucker (2026), *You're (Not) Hired: Artificial Intelligence and Early Career Hiring in the Quarterly Workforce Indicators*](https://www2.census.gov/library/working-papers/2026/adrm/ces/CES-WP-26-27.pdf)
+- [Brynjolfsson, Chandar, and Chen (2025, revised 2026), *Canaries in the Coal Mine? Six Facts about the Recent Employment Effects of Artificial Intelligence*](https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/)
+- [Crane and Soto (2026), *AI and Coder Employment: Compiling the Evidence*](https://doi.org/10.17016/FEDS.2026.018)
 - [Eloundou et al. (2024), *GPTs are GPTs: Labor Market Impact Potential of LLMs*](https://doi.org/10.1126/science.adj0998)
 
 ## Methods
@@ -32,7 +34,7 @@ Which methods or models will you use?
 
 - Descriptive statistics and visualizations
 - Log-linear pre-COVID employment trends for each state-industry group
-- Fixed-effects Poisson GLMs with state-industry and quarter fixed effects
+- Fixed-effects Poisson pseudo-maximum-likelihood GLMs with state-industry and quarter fixed effects
 - An employment offset for the hiring-rate specification
 - Industry-clustered standard errors
 - Quarter-specific AI-exposure interactions and matched-quarter comparisons
@@ -44,12 +46,14 @@ Which methods or models will you use?
 
 - QWI and ACS PUMS data-preparation programs are complete
 - The three-digit industry AI-exposure measure and final analysis panel are complete
+- The final panel contains 148,053 observations, 3,719 state-industry groups, 81 industries, 49 jurisdictions, and 42 quarters
+- The comparison period is 2015 Q1-2022 Q3, the post period is 2023 Q1-2025 Q3, and the transition quarter 2022 Q4 is excluded
 - Outcome-distribution checks and fixed-effects Poisson GLMs are complete
 - The primary rate model uses hire counts with log average employment as an offset; the count model uses the same outcome without the offset
 - Secondary-outcome, event-study, and industry-seasonality analyses are complete
 - Small-cell, employment-trend-validation, exposure-coverage, clustering, and industry-influence checks are complete
 - The same-quarter timing comparison and rate-count-employment decomposition are complete
-- The working manuscript is maintained outside the repository
+- The current 35-page manuscript draft, including the technical appendices, is maintained outside the repository
 - The remaining work is substantive revision, advisor feedback, and final formatting
 
 ## Expected Timeline
@@ -89,9 +93,13 @@ Python files are used only for API requests and large-data preparation. The note
 
 ## Reproduce the Project
 
+The project requires Python 3.11 or newer. The manuscript results and executed
+notebooks use Python 3.11.15.
+
 Create and activate the environment:
 
 ```bash
+python --version
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -122,9 +130,10 @@ credentials, and local research context are not committed to Git.
 - Approximately 50.8% of eligible ACS worker weight can be linked jointly to a usable industry and occupation exposure score.
 - Missing and Census-suppressed observations remain missing rather than being replaced with zero.
 - The primary estimates are interpreted as associations, not causal effects.
-- The pooled Poisson estimates are statistically unclear for both the hiring rate and hire count, and this conclusion is stable across the final sensitivity checks.
+- The primary pooled Poisson estimate is -0.38% for the hiring rate (`p = 0.569`) and -1.19% for hire counts (`p = 0.450`) per 0.10 increase in AI exposure; neither relationship is statistically clear.
+- Employment being 10 percentage points further above its predicted trend is associated with a 1.32% lower hiring rate (`p = 0.009`), while its hire-count association is statistically unclear (`p = 0.173`).
 - Comparing the same Poisson sample with and without the all-age employment-above-trend adjustment changes the hiring-rate estimate from -0.76% to -0.38% and the hire-count estimate from -0.54% to -1.19%; all four estimates remain statistically unclear.
-- Quarter-specific Poisson estimates show that an early negative hiring-rate difference fades by 2025 Q3 while negative count differences persist, but jointly nonzero earlier coefficients prevent a causal interpretation.
+- Quarter-specific Poisson estimates show that the hiring-rate difference changes from -3.29% in 2023 Q3 to 0.19% in 2025 Q3, while the hire-count difference remains near -5%; jointly nonzero earlier coefficients prevent a causal interpretation.
 - The earlier positive-count log-linear decomposition remains a sensitivity analysis rather than the primary model.
 - The initial research-design PDF proposed four-digit industries and a linear primary employment trend. Data diagnostics led to the documented use of three-digit industries and a log-linear primary trend.
 
