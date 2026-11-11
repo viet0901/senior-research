@@ -2,13 +2,13 @@
 
 ## Project Title
 
-AI Exposure or Post-Pandemic Employment Adjustment? Explaining the Decline in Early-Career Hiring
+AI Exposure or Post-Pandemic Employment Adjustment? The Role of Pre-COVID Employment Trends
 
 ## Research Question
 
 What question are you trying to answer?
 
-- Working Project Question: After accounting for employment above or below its pre-COVID predicted trend, is greater generative AI exposure associated with lower hiring among workers ages 22 to 24 after 2022?
+- Working Project Question: After accounting for employment above its pre-COVID predicted trend, is greater industry exposure to generative AI associated with lower hiring among workers ages 22 to 24 after 2022?
 
 This is an observational study, so the results are interpreted as associations rather than causal effects.
 
@@ -34,10 +34,11 @@ Which methods or models will you use?
 
 - Descriptive statistics and visualizations
 - Log-linear pre-COVID employment trends for each state-industry group
-- Fixed-effects Poisson pseudo-maximum-likelihood GLMs with state-industry and quarter fixed effects
-- An employment offset for the hiring-rate specification
+- Fixed-effects Poisson pseudo-maximum-likelihood models with state-industry and quarter fixed effects
+- Hiring-rate and hire-count models estimated with and without the employment-trend adjustment on the same sample
+- Log average employment among workers ages 22 to 24 as the hiring-rate model offset
 - Industry-clustered standard errors
-- Quarter-specific AI-exposure interactions and matched-quarter comparisons
+- Quarter-specific AI-exposure interactions relative to 2022 Q3 and matched-quarter comparisons
 - Linear and logged-outcome sensitivity analyses
 - Poisson convergence, separation, dispersion, and calibration checks
 - Small-cell, fixed-weight, exposure-coverage, trend-window, and clustering checks
@@ -50,11 +51,11 @@ Which methods or models will you use?
 - The comparison period is 2015 Q1-2022 Q3, the post period is 2023 Q1-2025 Q3, and the transition quarter 2022 Q4 is excluded
 - Outcome-distribution checks and fixed-effects Poisson GLMs are complete
 - The primary rate model uses hire counts with log average employment as an offset; the count model uses the same outcome without the offset
-- Secondary-outcome, event-study, and industry-seasonality analyses are complete
+- Hire-count, event-study, and industry-seasonality analyses are complete
 - Small-cell, employment-trend-validation, exposure-coverage, clustering, and industry-influence checks are complete
 - The same-quarter timing comparison and rate-count-employment decomposition are complete
-- The current 35-page manuscript draft, including the technical appendices, is maintained outside the repository
-- The remaining work is substantive revision, advisor feedback, and final formatting
+- The 35-page research paper, including technical appendices, is complete and maintained outside the repository
+- The repository workflow, executed notebook results, figures, and documented findings align with the final paper
 
 ## Expected Timeline
 
@@ -63,9 +64,9 @@ What do you expect to produce every week?
 - Weeks 1-2: Finalize the research design and prepare the QWI data pipeline
 - Weeks 3-4: Construct the industry AI-exposure measure and final analysis panel
 - Week 5: Complete descriptive analysis and preliminary fixed-effects models
-- Week 6: Estimate secondary-outcome and event-study models
+- Week 6: Estimate hire-count and event-study models
 - Week 7: Complete sensitivity checks and finalize figures and tables
-- Week 8: Write, revise, and prepare the final research paper
+- Week 8: Write, revise, and complete the final research paper
 
 ## Repository Structure
 
@@ -130,10 +131,12 @@ credentials, and local research context are not committed to Git.
 - Approximately 50.8% of eligible ACS worker weight can be linked jointly to a usable industry and occupation exposure score.
 - Missing and Census-suppressed observations remain missing rather than being replaced with zero.
 - The primary estimates are interpreted as associations, not causal effects.
+- The hiring rate is a quarterly labor-flow rate: `HirAEnd` divided by average young-worker employment, `(Emp + EmpEnd) / 2`. It is not an individual hiring probability and can exceed 100%.
 - The primary pooled Poisson estimate is -0.38% for the hiring rate (`p = 0.569`) and -1.19% for hire counts (`p = 0.450`) per 0.10 increase in AI exposure; neither relationship is statistically clear.
 - Employment being 10 percentage points further above its predicted trend is associated with a 1.32% lower hiring rate (`p = 0.009`), while its hire-count association is statistically unclear (`p = 0.173`).
 - Comparing the same Poisson sample with and without the all-age employment-above-trend adjustment changes the hiring-rate estimate from -0.76% to -0.38% and the hire-count estimate from -0.54% to -1.19%; all four estimates remain statistically unclear.
-- Quarter-specific Poisson estimates show that the hiring-rate difference changes from -3.29% in 2023 Q3 to 0.19% in 2025 Q3, while the hire-count difference remains near -5%; jointly nonzero earlier coefficients prevent a causal interpretation.
+- Quarter-specific Poisson estimates show that the hiring-rate difference changes from -3.29% in 2023 Q3 to 0.19% in 2025 Q3, while the statistically significant hire-count difference remains near -5% in both quarters.
+- Earlier quarter-specific coefficients are jointly nonzero, so the post-2022 patterns cannot be attributed specifically to ChatGPT.
 - The earlier positive-count log-linear decomposition remains a sensitivity analysis rather than the primary model.
 - The initial research-design PDF proposed four-digit industries and a linear primary employment trend. Data diagnostics led to the documented use of three-digit industries and a log-linear primary trend.
 

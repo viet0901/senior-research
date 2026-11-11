@@ -10,7 +10,7 @@ research analysis remain in the notebooks.
 python code/qwi_pipeline.py
 ```
 
-This downloads three-digit QWI data for ages 22–24 (`A03`) and all ages
+This downloads three-digit QWI data for ages 22-24 (`A03`) and all ages
 (`A00`), using private-sector, all-sex, unadjusted observations. It reads the
 Census key from `.env`, preserves raw API responses, and creates:
 
@@ -18,6 +18,11 @@ Census key from `.env`, preserves raw API responses, and creates:
 data/interim/qwi/qwi_research_ind3.csv
 data/interim/qwi/qwi_research_ind3_validation.json
 ```
+
+The younger-worker extract supplies `HirAEnd`, `HirAEndR`, `Emp`, and
+`EmpEnd` for the two hiring outcomes and their denominator. The all-age
+`EmpEnd` series supplies the 2015-2019 employment trends and the 2022 Q1-Q3
+employment-above-trend measure used in the paper.
 
 If an interrupted download must be resumed:
 
@@ -60,3 +65,10 @@ Final panel construction belongs in
 The occupation parser also stops a `Combines:` block when the next Census
 section heading begins, so broad SOC headings are not assigned to the preceding
 ACS occupation.
+
+The industry parser also reads blank continuation rows and textual rules such
+as `722 except 7224` as parts of the complete official mapping. An ACS industry
+is linked to QWI only when all of its official targets reduce to one
+three-digit industry. The resulting exposure file covers 81 QWI industries;
+50.8% of eligible ACS worker weight has both a defensible industry link and a
+usable occupation exposure score.

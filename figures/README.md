@@ -5,45 +5,50 @@ PNG files are saved at 300 DPI for use in the paper. The charts generally omit
 an internal title because the manuscript supplies a declarative title and
 standalone caption below each figure.
 
-## Data Preparation Figure
+## Main Paper Figures
 
-- `employment_trend_comparison.png`: Compares observed all-age employment with
-  the linear and log-linear pre-COVID trends for selected state-industry
-  examples. Created by `notebooks/01_data_preparation.ipynb`.
+- `employment_trend_comparison.png` (Figure 1): Compares observed all-age
+  employment with linear and log-linear pre-COVID trends for a typical group,
+  a group with a large difference between methods, and a group with an invalid
+  linear prediction. Created by `notebooks/01_data_preparation.ipynb`.
+- `early_career_hiring_pre_post.png` (Figure 2): Compares group-level mean and
+  median hiring rates and hire counts before and after 2022.
+- `ai_exposure_hiring_change.png` (Figure 3): Shows industry AI exposure
+  against the unadjusted pre-to-post change in early-career hiring rates for 81
+  three-digit industries.
+- `employment_trend_hiring_change.png` (Figure 4): Shows employment above its
+  predicted trend against the pre-to-post hiring-rate change across
+  state-industry groups.
+- `ai_exposure_event_study.png` (Figure 5): Displays quarter-specific
+  AI-exposure associations for the hiring-rate and hire-count Poisson models,
+  relative to 2022 Q3.
 
-## Descriptive Figures
+Except for Figure 1, these figures are created by
+`notebooks/02_research_analysis.ipynb`.
 
-- `early_career_hiring_pre_post.png`: Compares early-career hiring rates and
-  hire counts before and after 2022.
-- `ai_exposure_hiring_change.png`: Shows industry AI exposure against the
-  pre-to-post change in early-career hiring rates.
-- `employment_trend_hiring_change.png`: Shows employment above its predicted
-  trend against the pre-to-post hiring-rate change.
-- `hiring_outcome_distributions.png`: Displays the distributions of the hiring
-  rate and end-of-quarter hire count.
+## Appendix Diagnostic Figures
 
-These figures are created by `notebooks/02_research_analysis.ipynb`.
-
-## Model and Timing Figures
-
-- `ai_exposure_event_study.png`: Displays quarter-specific AI-exposure
-  associations for the hiring-rate and hire-count Poisson models.
-- `linear_model_diagnostics.png`: Shows residual-versus-fitted and Q-Q plots
-  for the supplementary linear hiring-rate model.
-- `log_count_model_diagnostics.png`: Shows the corresponding diagnostics for
-  the positive-count logged sensitivity model.
+- `hiring_outcome_distributions.png` (Figure B.1): Displays the strongly
+  right-skewed hire-count distribution and the published quarterly hiring-rate
+  distribution, including valid rates above 100%.
+- `linear_model_diagnostics.png` (Figure B.2): Shows residual-versus-fitted and
+  Q-Q plots for the supplementary linear fixed-effects hiring-rate model.
+- `log_count_model_diagnostics.png` (Figure B.3): Shows residual diagnostics
+  for the positive-count logged sensitivity model, which excludes zero hires.
 
 These figures are also created by `notebooks/02_research_analysis.ipynb`.
 The Poisson models are checked through convergence, separation, dispersion,
-offset, and calibration measures in the notebook rather than with Q-Q plots.
+offset, calibration, and robustness measures in the notebook rather than with
+Q-Q plots.
 
 ## Legacy Filenames
 
 - `primary_model_diagnostics.png`
 - `secondary_hire_model_diagnostics.png`
 
-These are earlier copies retained under old names. The active notebook now
-creates `linear_model_diagnostics.png` and `log_count_model_diagnostics.png`.
+These are earlier copies retained under old names and are not used in the final
+paper. The active notebook creates `linear_model_diagnostics.png` and
+`log_count_model_diagnostics.png`.
 
 To regenerate the complete active figure set, run
 `notebooks/01_data_preparation.ipynb` and then

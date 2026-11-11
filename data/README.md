@@ -46,13 +46,32 @@ required by the active preparation program. The local `SOURCES.md` and
   coverage checks.
 
 These files are outputs of the two programs in `code/`; they are not original
-source data.
+source data. The QWI file contains ages 22-24 hiring outcomes and all-age
+quarter-end employment. The exposure file contains one national ACS-weighted
+AI-exposure score for each of 81 three-digit industries.
 
 ### `processed/`: final analysis data
 
 - `processed/final_analysis_panel.csv`: Final state-industry-quarter panel
   created and checked by `notebooks/01_data_preparation.ipynb`. This is the file
   loaded by `notebooks/02_research_analysis.ipynb`.
+
+The final panel contains 148,053 observations from 3,719 state-industry
+groups, 81 industries, 49 jurisdictions, and 42 quarters. Its comparison
+period is 2015 Q1-2022 Q3, its post period is 2023 Q1-2025 Q3, and 2022 Q4 is
+excluded. The panel includes:
+
+- `hire_count`, the normalized name for the ages 22-24 QWI `HirAEnd` measure;
+- `hiring_rate` and `hiring_rate_pct`, derived from the published QWI
+  `HirAEndR` measure;
+- `young_average_employment`, reconstructed as `(Emp + EmpEnd) / 2` for ages
+  22-24;
+- the three-digit industry AI-exposure score; and
+- all-age employment above the state-industry group's predicted pre-COVID
+  trend.
+
+The hiring rate is a quarterly labor-flow rate rather than an individual
+probability, so valid values can exceed 100% in small groups.
 
 ## Rebuild the data after a fresh clone
 
@@ -93,7 +112,8 @@ python code/prepare_ai_exposure.py
 
 Run `notebooks/01_data_preparation.ipynb`. It combines the two interim inputs,
 constructs the employment-trend measure, checks the final sample, and saves the
-processed panel.
+processed panel. Then run `notebooks/02_research_analysis.ipynb` to reproduce
+the descriptive results, models, diagnostics, and figures in the paper.
 
 Do not replace missing or Census-suppressed values with zero. API keys belong
 only in the ignored `.env` file, never in `data/`.
